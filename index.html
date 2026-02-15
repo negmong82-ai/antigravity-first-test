@@ -18,8 +18,11 @@
     <div class="orb"></div>
   </div>
 
-  <!-- Particle System -->
+  <!-- Particle Background -->
   <canvas id="particleCanvas"></canvas>
+
+  <!-- PortOne SDK (Mock Integration) -->
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 
   <!-- Header -->
   <header class="header">
@@ -142,26 +145,25 @@
     <!-- Step 3: Results -->
     <section class="step-panel" id="step3">
       <div class="result-header">
-        <div class="section-title">
-          <h2>당신에게 어울리는 <span class="highlight">스타일</span></h2>
+        <div id="bodyTypeIcon" class="body-type-badge">💪</div>
+        <h2 id="bodyTypeText">탄탄 체형</h2>
+        <div class="header-stats">
+          <div class="stat-item"><span id="statHeight">177cm</span><small>키</small></div>
+          <div class="stat-item"><span id="statWeight">72kg</span><small>몸무게</small></div>
+          <div class="stat-item"><span id="statBmi">23.0</span><small>BMI</small></div>
         </div>
-        <div class="body-type-badge" id="bodyTypeBadge">
-          <span id="bodyTypeIcon">💪</span>
-          <span id="bodyTypeText">체형 분석 결과</span>
-        </div>
-        <div class="body-stats">
-          <div class="stat-item">
-            <span class="stat-value" id="statHeight">-</span>
-            <span class="stat-label">키</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="statWeight">-</span>
-            <span class="stat-label">몸무게</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="statBmi">-</span>
-            <span class="stat-label">BMI</span>
-          </div>
+      </div>
+
+      <!-- Premium Action Banner -->
+      <div id="premiumBanner" class="premium-card">
+        <div class="premium-content">
+          <div class="premium-badge">PREMIUM</div>
+          <h3>나에게 딱 맞는 전문 코디 리포트</h3>
+          <p>AI가 분석한 상세 체형 데이터와 1:1 맞춤형 쇼핑 리스트를 지금 바로 확인해보세요.</p>
+          <button id="payBtn" class="premium-btn">
+            <span class="btn-shine"></span>
+            💎 프리미엄 리포트 구매 (9,900원)
+          </button>
         </div>
       </div>
 

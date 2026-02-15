@@ -145,7 +145,15 @@
     tipList: $('#tipList'),
     restartBtn: $('#restartBtn'),
     saveResultBtn: $('#saveResultBtn'),
+    payBtn: $('#payBtn'),
+    premiumBanner: $('#premiumBanner'),
   };
+
+  // ===== PortOne Initialization =====
+  const IMP = window.IMP;
+  if (IMP) {
+    IMP.init('imp00000000'); // 테스트 가맹점 식별코드
+  }
 
   // ===== Style Recommendation Data =====
   const BODY_TYPES = {
@@ -465,6 +473,69 @@
   dom.backToStep1Btn.addEventListener('click', () => {
     goToStep(1);
   });
+
+  // ===== Payment Handler =====
+  if (dom.payBtn) {
+    dom.payBtn.addEventListener('click', () => {
+      if (!IMP) {
+        alert('결제 모듈을 불러올 수 없습니다.');
+        return;
+      }
+
+      // 실제로는 서버에서 생성된 merchant_uid를 사용해야 함
+      const merchant_uid = `ORD-${Date.now()}`;
+
+      IMP.request_pay({
+        pg: 'kakaopay.TC0ONETIME', // 카카오페이 테스트 코드
+        pay_method: 'card',
+        merchant_uid: merchant_uid,
+        name: 'StyleForMen 프리미엄 리포트',
+        amount: 9900,
+        buyer_email: 'test@example.com',
+        buyer_name: '테스터',
+        buyer_tel: '010-1234-5678',
+      }, function (rsp) {
+        if (rsp.success) {
+          // 결제 성공!
+          unlockPremiumContent();
+          alert('결제가 완료되었습니다! 프리미엄 기능이 활성화되었습니다.');
+        } else {
+          // 결제 실패 (테스트 환경에서는 취소 버튼을 누르면 이리로 옴)
+          // 하지만 시뮬레이션을 위해 실패하더라도 성공인 척 할 수 있는 '강제 성공' 모드를 유도하거나 안내
+          console.log('결제 실패:', rsp.error_msg);
+
+          // 사용자 경험을 위해 테스트 환경임을 안내하고 시뮬레이션 버튼 제공
+          if (confirm('테스트 환경에서 결제를 건너뛰고 프리미엄 기능을 확인하시겠습니까?')) {
+            unlockPremiumContent();
+          }
+        }
+      });
+    });
+  }
+
+  function unlockPremiumContent() {
+    if (!dom.premiumBanner) return;
+
+    dom.premiumBanner.classList.add('unlocked');
+    dom.premiumBanner.innerHTML = `
+      <div class="premium-content">
+        <div class="premium-badge">✅ UNLOCKED</div>
+        <h3>🎉 프리미엄 리포트가 잠금 해제되었습니다!</h3>
+        <p>전담 스타일리스트의 맞춤형 조언과 상세 분석 리포트를 확인하세요.</p>
+        <div class="premium-analysis" style="margin-top: 20px; text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px dashed #2ecc71;">
+          <h4 style="color: #2ecc71; margin-bottom: 10px;">🌟 전문 코디네이터의 한마디</h4>
+          <p style="color: #fff; font-size: 0.9rem; line-height: 1.6;">
+            현재 ${state.bodyType === 'standard' ? '표준' : state.bodyType} 체질에 맞춰 매우 균형 잡힌 코디를 추천드렸습니다. 
+            추가적으로 현재 트렌드인 <strong>'미니멀리즘 실루엣'</strong>을 위해 와이드 팬츠와 크롭 상의 조합을 특히 추천드립니다.
+            피부 톤을 고려했을 때 네이비와 그레이 컬러의 레이어드가 가장 지적인 이미지를 연출할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    `;
+
+    // 스크롤 이동
+    dom.premiumBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   // ===== Analyze Button =====
   dom.analyzeBtn.addEventListener('click', () => {
