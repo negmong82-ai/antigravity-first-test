@@ -1,0 +1,9 @@
+.DS_Store
+._*
+# macOS files
+.AppleDouble
+.LSOverride
+Icon
+Network Trash Folder
+Temporary Items
+.Trashes
