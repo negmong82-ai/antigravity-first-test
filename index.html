@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="사진과 체형 정보를 입력하면 어울리는 남성 패션 스타일을 추천해드립니다.">
+  <title>StyleForMen - 남성 패션 스타일 추천</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Animation -->
+  <div class="bg-animation">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <a href="#" class="logo" onclick="location.reload()">
+      <div class="logo-icon">S</div>
+      <span class="logo-text">StyleForMen</span>
+    </a>
+    <span class="header-tagline">당신의 스타일을 찾아드립니다</span>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+      <div class="step-indicator active" data-step="1">
+        <div class="step-circle">1</div>
+        <span class="step-label">사진 업로드</span>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-indicator" data-step="2">
+        <div class="step-circle">2</div>
+        <span class="step-label">체형 정보</span>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-indicator" data-step="3">
+        <div class="step-circle">3</div>
+        <span class="step-label">스타일 추천</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Photo Upload -->
+    <section class="step-panel active" id="step1">
+      <div class="section-title">
+        <h2>나의 <span class="highlight">사진</span>을 올려주세요</h2>
+        <p>전신 또는 상반신 사진을 업로드하면 더 정확한 스타일을 추천해드릴 수 있어요</p>
+      </div>
+
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="fileInput" accept="image/*">
+        <div class="upload-content" id="uploadContent">
+          <span class="upload-icon">📷</span>
+          <h3>사진을 드래그하거나 클릭해서 업로드</h3>
+          <p>JPG, PNG 파일을 지원합니다</p>
+          <span class="upload-hint">💡 전신 사진일수록 더 정확한 추천이 가능해요</span>
+        </div>
+        <div class="upload-preview" id="uploadPreview">
+          <img id="previewImage" src="" alt="업로드된 사진">
+          <button class="change-btn" id="changePhotoBtn">📷 다른 사진 선택</button>
+        </div>
+      </div>
+
+      <div class="buttons-row" style="margin-top: 28px;">
+        <button class="btn-primary" id="toStep2Btn" disabled>
+          다음 단계로 →
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 2: Body Info -->
+    <section class="step-panel" id="step2">
+      <div class="section-title">
+        <h2><span class="highlight">체형 정보</span>를 입력해주세요</h2>
+        <p>키와 몸무게를 기반으로 체형을 분석하고 맞춤 스타일을 추천합니다</p>
+      </div>
+
+      <div class="info-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="heightInput">키</label>
+            <input type="number" id="heightInput" placeholder="175" min="100" max="250">
+            <span class="unit">cm (센티미터)</span>
+          </div>
+          <div class="form-group">
+            <label for="weightInput">몸무게</label>
+            <input type="number" id="weightInput" placeholder="70" min="30" max="250">
+            <span class="unit">kg (킬로그램)</span>
+          </div>
+        </div>
+
+        <div class="style-preference">
+          <label>선호하는 스타일</label>
+          <div class="style-options">
+            <label class="style-option">
+              <input type="radio" name="style" value="casual" checked>
+              <div class="option-card">
+                <span class="option-icon">👕</span>
+                <span class="option-name">캐주얼</span>
+                <span class="option-desc">편하고 자연스러운</span>
+              </div>
+            </label>
+            <label class="style-option">
+              <input type="radio" name="style" value="business">
+              <div class="option-card">
+                <span class="option-icon">👔</span>
+                <span class="option-name">비즈니스</span>
+                <span class="option-desc">깔끔하고 세련된</span>
+              </div>
+            </label>
+            <label class="style-option">
+              <input type="radio" name="style" value="street">
+              <div class="option-card">
+                <span class="option-icon">🧢</span>
+                <span class="option-name">스트릿</span>
+                <span class="option-desc">트렌디하고 개성있는</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="buttons-row">
+          <button class="btn-secondary" id="backToStep1Btn">← 이전</button>
+          <button class="btn-primary" id="analyzeBtn">
+            🔍 스타일 분석 시작
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Results -->
+    <section class="step-panel" id="step3">
+      <div class="result-header">
+        <div class="section-title">
+          <h2>당신에게 어울리는 <span class="highlight">스타일</span></h2>
+        </div>
+        <div class="body-type-badge" id="bodyTypeBadge">
+          <span id="bodyTypeIcon">💪</span>
+          <span id="bodyTypeText">체형 분석 결과</span>
+        </div>
+        <div class="body-stats">
+          <div class="stat-item">
+            <span class="stat-value" id="statHeight">-</span>
+            <span class="stat-label">키</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="statWeight">-</span>
+            <span class="stat-label">몸무게</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="statBmi">-</span>
+            <span class="stat-label">BMI</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendation Cards Container -->
+      <div class="rec-grid" id="recGrid"></div>
+
+      <!-- Color Palette -->
+      <div class="color-palette" id="colorPalette">
+        <h3>🎨 추천 컬러 팔레트</h3>
+        <div class="color-swatches" id="colorSwatches"></div>
+      </div>
+
+      <!-- Tips -->
+      <div class="tips-card" id="tipsCard">
+        <h3>💡 스타일링 팁</h3>
+        <div class="tip-list" id="tipList"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="result-actions">
+        <button class="btn-secondary" id="restartBtn">🔄 처음부터 다시</button>
+        <button class="btn-primary" id="saveResultBtn">📋 결과 저장하기</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <h3>스타일을 분석하고 있습니다</h3>
+    <p>잠시만 기다려주세요...</p>
+    <div class="loading-steps">
+      <div class="loading-step" id="loadStep1">📐 체형 분석 중...</div>
+      <div class="loading-step" id="loadStep2">👔 스타일 매칭 중...</div>
+      <div class="loading-step" id="loadStep3">🎨 컬러 추천 생성 중...</div>
+      <div class="loading-step" id="loadStep4">✨ 최종 결과 준비 중...</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    StyleForMen © 2026 — 패션을 쉽게, 나만의 스타일을 찾다
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
