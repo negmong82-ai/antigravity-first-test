@@ -3,6 +3,113 @@
 (function () {
   'use strict';
 
+  // ===== Particle System =====
+  const canvas = document.getElementById('particleCanvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const PARTICLE_COUNT = 40;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedY = -(Math.random() * 0.3 + 0.1);
+        this.speedX = (Math.random() - 0.5) * 0.2;
+        this.opacity = Math.random() * 0.5 + 0.1;
+        this.color = Math.random() > 0.6
+          ? `rgba(226, 183, 20, ${this.opacity})`
+          : `rgba(58, 123, 213, ${this.opacity * 0.7})`;
+        this.pulse = Math.random() * Math.PI * 2;
+        this.pulseSpeed = Math.random() * 0.02 + 0.01;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX + Math.sin(this.pulse) * 0.1;
+        this.pulse += this.pulseSpeed;
+        if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+          this.reset();
+          this.y = canvas.height + 10;
+        }
+      }
+      draw() {
+        const pulseFactor = 1 + Math.sin(this.pulse) * 0.3;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * pulseFactor, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  }
+
+  // ===== Mouse-tracking Glow for Cards =====
+  document.addEventListener('mousemove', (e) => {
+    const cards = document.querySelectorAll('.rec-card');
+    cards.forEach(card => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty('--mouse-x', x + '%');
+      card.style.setProperty('--mouse-y', y + '%');
+    });
+  });
+
+  // ===== Scroll-triggered Reveal Observer =====
+  function setupScrollReveal() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    // Observe all revealable elements
+    document.querySelectorAll('.rec-card, .color-palette, .tips-card, .color-swatch, .tip-item')
+      .forEach(el => observer.observe(el));
+  }
+
+  // ===== Counter Animation =====
+  function animateCounter(el, target, suffix = '', duration = 800) {
+    const start = 0;
+    const startTime = performance.now();
+    const isFloat = String(target).includes('.');
+
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutExpo
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const current = start + (target - start) * eased;
+      el.textContent = (isFloat ? current.toFixed(1) : Math.round(current)) + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
   // ===== State =====
   const state = {
     currentStep: 1,
@@ -429,9 +536,14 @@
     // Header
     $('#bodyTypeIcon').textContent = typeInfo.icon;
     $('#bodyTypeText').textContent = typeInfo.label;
-    $('#statHeight').textContent = state.height + 'cm';
-    $('#statWeight').textContent = state.weight + 'kg';
-    $('#statBmi').textContent = bmi;
+
+    // Animated counters for stats
+    const statHeight = $('#statHeight');
+    const statWeight = $('#statWeight');
+    const statBmi = $('#statBmi');
+    animateCounter(statHeight, state.height, 'cm', 1000);
+    animateCounter(statWeight, state.weight, 'kg', 1000);
+    animateCounter(statBmi, bmi, '', 1200);
 
     // Recommendation cards
     dom.recGrid.innerHTML = '';
@@ -460,7 +572,7 @@
 
     // Color palette
     dom.colorSwatches.innerHTML = '';
-    colors.forEach((c) => {
+    colors.forEach((c, i) => {
       const sw = document.createElement('div');
       sw.className = 'color-swatch';
       sw.innerHTML = `
@@ -472,7 +584,7 @@
 
     // Tips
     dom.tipList.innerHTML = '';
-    tips.forEach((tip) => {
+    tips.forEach((tip, i) => {
       const item = document.createElement('div');
       item.className = 'tip-item';
       item.innerHTML = `
@@ -480,6 +592,11 @@
         <span>${tip.text}</span>
       `;
       dom.tipList.appendChild(item);
+    });
+
+    // Set up scroll-triggered reveals for dynamically added elements
+    requestAnimationFrame(() => {
+      setupScrollReveal();
     });
   }
 
